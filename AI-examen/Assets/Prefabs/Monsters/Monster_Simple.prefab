@@ -146,19 +146,18 @@ MonoBehaviour:
   paused: 0
   restartWhenFinished: 1
   blackboard:
-    intParams: 
-    intParamsNames: []
+    intParams: 01000000
+    intParamsNames:
+    - attackDelay
     intParamsLostDefaultValue: 
     boolParams: 00
     boolParamsNames:
-    - active_attack
+    - shouldAttack
     boolParamsLostDefaultValue: 
     floatParams:
-    - 6
     - 5
     floatParamsNames:
-    - attackDistances
-    - followTargetDistance
+    - targetDistance
     floatParamsLostDefaultValue: 
     stringParams:
     - Villager
@@ -170,8 +169,10 @@ MonoBehaviour:
     colorParamsLostDefaultValue: 
     objectParams:
     - {fileID: 0}
+    - {fileID: 0}
     objectParamsNames:
     - target
+    - moveToArea
     objectParamsLostDefaultValue: 
     layerMaskParams: []
     layerMaskParamsNames: []

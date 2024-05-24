@@ -14,7 +14,7 @@ public class MonsterController : MonoBehaviour
     public GameObject wanderArea;
     ///<value>Target GameObject to follow</value>
     public GameObject player;
-
+    public string monsterTag = "Monster";
     private List<BehaviorExecutor> monsters;
 
     public float spawnRange = 10.0f; // Range around the player where monsters will spawn
@@ -36,9 +36,10 @@ public class MonsterController : MonoBehaviour
             GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity);
             BehaviorExecutor behaviorExecutor = instance.GetComponent<BehaviorExecutor>();
             instance.transform.parent = monsterParent;
+            instance.tag = monsterTag;
             if (behaviorExecutor != null)
             {
-                behaviorExecutor.SetBehaviorParam("player", player);
+                behaviorExecutor.SetBehaviorParam("moveToArea", player);
                 monsters.Add(behaviorExecutor);
             }
         }
@@ -54,15 +55,14 @@ public class MonsterController : MonoBehaviour
         float moveVertical = Input.GetAxis("Vertical");
         Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical);
         transform.Translate(movement * speed * Time.deltaTime);
-       // active_attack = (Input.GetAxis("Jump") != 0);
+        active_attack = (Input.GetAxis("Jump") != 0);
     }
 
     void FixedUpdate()
     {
         foreach (BehaviorExecutor be in monsters)
         {
-            be.SetBehaviorParam("player_pos", transform.position);
-            be.SetBehaviorParam("active_attack", active_attack);
+            be.SetBehaviorParam("shouldAttack",active_attack);
         }
     }
 }
