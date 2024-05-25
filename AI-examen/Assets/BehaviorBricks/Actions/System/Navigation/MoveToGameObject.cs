@@ -53,7 +53,7 @@ namespace BBUnity.Actions
         {
             if (target == null)
                 return TaskStatus.FAILED;
-            if (!navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance)
+            if (!navAgent.pathPending && navAgent.remainingDistance <= navAgent.stoppingDistance || navAgent.isStopped)
                 return TaskStatus.COMPLETED;
             else if (navAgent.destination != targetTransform.position)
                 navAgent.SetDestination(targetTransform.position);

@@ -15,26 +15,39 @@ MonoBehaviour:
   brickName: Assets/Prefabs/simpleVillager.asset
   xml: "\uFEFF<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<BehaviorBricks xmlns:ref=\"urn:padaone\"
     version=\"1.0\">\r\n  <BehaviorTree id=\"0\" />\r\n  <runtimeInfo>\r\n    <BehaviorTree
-    id=\"0\" guid=\"e05c846b3248a4547a457781670dad90\" nextId=\"15\">\r\n      <root>\r\n       
+    id=\"0\" guid=\"e05c846b3248a4547a457781670dad90\" nextId=\"17\">\r\n      <root>\r\n       
     <PrioritySelectorNode id=\"1\" />\r\n      </root>\r\n      <inputParams>\r\n       
     <inputValues>\r\n          <entry name=\"escaping\" type=\"System.Boolean\" isBlackboard=\"False\"
     value=\"False\" />\r\n          <entry name=\"chilling\" type=\"System.Single\"
     isBlackboard=\"False\" value=\"2\" />\r\n          <entry name=\"walkingArea\"
     type=\"UnityEngine.GameObject\" isBlackboard=\"False\" />\r\n          <entry
     name=\"closeDistance\" type=\"System.Single\" isBlackboard=\"False\" value=\"5\"
-    />\r\n        </inputValues>\r\n      </inputParams>\r\n      <outputParams />\r\n     
-    <localParams />\r\n    </BehaviorTree>\r\n    <PrioritySelectorNode id=\"1\">\r\n     
-    <children>\r\n        <elem>\r\n          <GuardAndNode>\r\n            <guard>\r\n             
-    <ConditionEvalNode id=\"8\" />\r\n            </guard>\r\n            <child>\r\n             
-    <RandomSelectorNode id=\"7\" />\r\n            </child>\r\n          </GuardAndNode>\r\n       
-    </elem>\r\n      </children>\r\n      <inputParams />\r\n      <outputParams
-    />\r\n      <localParams />\r\n    </PrioritySelectorNode>\r\n    <ConditionEvalNode
-    id=\"8\" policy=\"WAIT_UNTIL_FALSE_AND_FAIL\" name=\"Basic/CheckBool\">\r\n     
+    />\r\n          <entry name=\"body\" type=\"UnityEngine.GameObject\" isBlackboard=\"False\"
+    />\r\n          <entry name=\"walkAreaSize\" type=\"System.Single\" isBlackboard=\"False\"
+    value=\"20\" />\r\n          <entry name=\"panicAreaSize\" type=\"System.Single\"
+    isBlackboard=\"False\" value=\"60\" />\r\n        </inputValues>\r\n      </inputParams>\r\n     
+    <outputParams />\r\n      <localParams />\r\n    </BehaviorTree>\r\n    <PrioritySelectorNode
+    id=\"1\">\r\n      <children>\r\n        <elem>\r\n          <GuardAndNode>\r\n           
+    <guard>\r\n              <ConditionEvalNode id=\"16\" />\r\n            </guard>\r\n           
+    <child>\r\n              <ActionNode id=\"15\" />\r\n            </child>\r\n         
+    </GuardAndNode>\r\n        </elem>\r\n        <elem>\r\n          <GuardAndNode>\r\n           
+    <guard>\r\n              <ConditionEvalNode id=\"8\" />\r\n            </guard>\r\n           
+    <child>\r\n              <RandomSelectorNode id=\"7\" />\r\n            </child>\r\n         
+    </GuardAndNode>\r\n        </elem>\r\n      </children>\r\n      <inputParams
+    />\r\n      <outputParams />\r\n      <localParams />\r\n    </PrioritySelectorNode>\r\n   
+    <ConditionEvalNode id=\"16\" policy=\"WAIT_UNTIL_TRUE_AND_COMPLETE\" name=\"Basic/CheckBool\">\r\n     
     <inputParams>\r\n        <inputValues>\r\n          <entry name=\"valueA\" type=\"System.Boolean\"
     isBlackboard=\"True\" blackboard=\"escaping\" />\r\n          <entry name=\"valueB\"
-    type=\"System.Boolean\" isBlackboard=\"False\" value=\"False\" />\r\n       
+    type=\"System.Boolean\" isBlackboard=\"False\" value=\"True\" />\r\n        </inputValues>\r\n     
+    </inputParams>\r\n      <outputParams />\r\n      <localParams />\r\n    </ConditionEvalNode>\r\n   
+    <ActionNode id=\"15\" action=\"Navigation/MoveToRandomPositionInArea\">\r\n     
+    <inputParams>\r\n        <inputValues>\r\n          <entry name=\"area\" type=\"UnityEngine.GameObject\"
+    isBlackboard=\"True\" blackboard=\"body\" />\r\n          <entry name=\"areaSize\"
+    type=\"System.Single\" isBlackboard=\"True\" blackboard=\"panicAreaSize\" />\r\n       
     </inputValues>\r\n      </inputParams>\r\n      <outputParams />\r\n      <localParams
-    />\r\n    </ConditionEvalNode>\r\n    <RandomSelectorNode id=\"7\">\r\n     
+    />\r\n    </ActionNode>\r\n    <ConditionEvalNode id=\"8\" policy=\"WAIT_UNTIL_FALSE_AND_FAIL\"
+    name=\"AlwaysTrue\">\r\n      <inputParams />\r\n      <outputParams />\r\n     
+    <localParams />\r\n    </ConditionEvalNode>\r\n    <RandomSelectorNode id=\"7\">\r\n     
     <probs>\r\n        <elem>1</elem>\r\n        <elem>1</elem>\r\n      </probs>\r\n     
     <children>\r\n        <elem>\r\n          <ActionNode id=\"9\" />\r\n       
     </elem>\r\n        <elem>\r\n          <ActionNode id=\"10\" />\r\n        </elem>\r\n     
@@ -43,45 +56,60 @@ MonoBehaviour:
     <inputParams>\r\n        <inputValues>\r\n          <entry name=\"seconds\" type=\"System.Single\"
     isBlackboard=\"True\" blackboard=\"chilling\" />\r\n        </inputValues>\r\n     
     </inputParams>\r\n      <outputParams />\r\n      <localParams />\r\n    </ActionNode>\r\n   
-    <ActionNode id=\"10\" action=\"Navigation/MoveToRandomPosition\">\r\n      <inputParams>\r\n       
-    <inputValues>\r\n          <entry name=\"area\" type=\"UnityEngine.GameObject\"
-    isBlackboard=\"True\" blackboard=\"walkingArea\" />\r\n        </inputValues>\r\n     
-    </inputParams>\r\n      <outputParams />\r\n      <localParams />\r\n    </ActionNode>\r\n 
-    </runtimeInfo>\r\n  <editorInfo>\r\n    <BehaviorTree id=\"0\" _name=\"simpleVillager\"
-    _description=\"\" _removeIfClosed=\"False\">\r\n      <_rootList>\r\n       
-    <elem>\r\n          <PrioritySelectorNode id=\"1\" />\r\n        </elem>\r\n       
-    <elem>\r\n          <RandomSelectorNode id=\"7\" />\r\n        </elem>\r\n       
-    <elem>\r\n          <ConditionEvalNode id=\"8\" />\r\n        </elem>\r\n       
-    <elem>\r\n          <ActionNode id=\"9\" />\r\n        </elem>\r\n        <elem>\r\n         
-    <ActionNode id=\"10\" />\r\n        </elem>\r\n      </_rootList>\r\n      <_nodes>\r\n       
+    <ActionNode id=\"10\" action=\"Navigation/MoveToRandomPositionInArea\">\r\n     
+    <inputParams>\r\n        <inputValues>\r\n          <entry name=\"area\" type=\"UnityEngine.GameObject\"
+    isBlackboard=\"True\" blackboard=\"body\" />\r\n          <entry name=\"areaSize\"
+    type=\"System.Single\" isBlackboard=\"True\" blackboard=\"walkAreaSize\" />\r\n       
+    </inputValues>\r\n      </inputParams>\r\n      <outputParams />\r\n      <localParams
+    />\r\n    </ActionNode>\r\n  </runtimeInfo>\r\n  <editorInfo>\r\n    <BehaviorTree
+    id=\"0\" _name=\"simpleVillager\" _description=\"\" _removeIfClosed=\"False\">\r\n     
+    <_rootList>\r\n        <elem>\r\n          <PrioritySelectorNode id=\"1\" />\r\n       
+    </elem>\r\n        <elem>\r\n          <RandomSelectorNode id=\"7\" />\r\n       
+    </elem>\r\n        <elem>\r\n          <ConditionEvalNode id=\"8\" />\r\n       
+    </elem>\r\n        <elem>\r\n          <ActionNode id=\"9\" />\r\n        </elem>\r\n       
+    <elem>\r\n          <ActionNode id=\"10\" />\r\n        </elem>\r\n        <elem>\r\n         
+    <ActionNode id=\"15\" />\r\n        </elem>\r\n        <elem>\r\n          <ConditionEvalNode
+    id=\"16\" />\r\n        </elem>\r\n      </_rootList>\r\n      <_nodes>\r\n       
     <nodes>\r\n          <PrioritySelectorNode id=\"1\" />\r\n          <RandomSelectorNode
     id=\"7\" />\r\n          <ConditionEvalNode id=\"8\" />\r\n          <ActionNode
-    id=\"9\" />\r\n          <ActionNode id=\"10\" />\r\n        </nodes>\r\n     
+    id=\"9\" />\r\n          <ActionNode id=\"10\" />\r\n          <ActionNode id=\"15\"
+    />\r\n          <ConditionEvalNode id=\"16\" />\r\n        </nodes>\r\n     
     </_nodes>\r\n    </BehaviorTree>\r\n    <PrioritySelectorNode id=\"1\">\r\n     
-    <_data>\r\n        <data breakpoint=\"0\" selected=\"False\" position=\"863.25
-    409.75\" name=\"Priority Selector\" description=\"\" cardinality=\"1\" hasParent=\"False\">\r\n         
+    <_data>\r\n        <data breakpoint=\"0\" selected=\"False\" position=\"711.5303
+    422.8611\" name=\"Priority Selector\" description=\"\" cardinality=\"1\" hasParent=\"False\">\r\n         
     <BehaviorTree id=\"0\" />\r\n          <PrioritySelectorNode id=\"1\" />\r\n       
     </data>\r\n      </_data>\r\n    </PrioritySelectorNode>\r\n    <ConditionEvalNode
-    id=\"8\">\r\n      <_data>\r\n        <data breakpoint=\"0\" selected=\"False\"
-    position=\"1237.188 688.75\" name=\"Basic/CheckBool\" description=\"Eval\" cardinality=\"1\"
+    id=\"16\">\r\n      <_data>\r\n        <data breakpoint=\"0\" selected=\"False\"
+    position=\"327 559\" name=\"Basic/CheckBool\" description=\"Eval\" cardinality=\"1\"
     hasParent=\"True\">\r\n          <BehaviorTree id=\"0\" />\r\n          <ConditionEvalNode
-    id=\"8\" />\r\n          <PrioritySelectorNode id=\"1\" />\r\n        </data>\r\n     
-    </_data>\r\n    </ConditionEvalNode>\r\n    <RandomSelectorNode id=\"7\">\r\n     
-    <_data>\r\n        <data breakpoint=\"0\" selected=\"False\" position=\"878.75
-    545\" name=\"Random Selector\" description=\"Selects randomly one of its children\"
-    cardinality=\"-1\" hasParent=\"False\">\r\n          <BehaviorTree id=\"0\" />\r\n         
-    <RandomSelectorNode id=\"7\" />\r\n        </data>\r\n      </_data>\r\n    </RandomSelectorNode>\r\n   
-    <ActionNode id=\"9\">\r\n      <_data>\r\n        <data breakpoint=\"0\" selected=\"False\"
-    position=\"735 708.75\" name=\"Basic/WaitForSeconds\" description=\"Action that
-    success after a period of time.\" cardinality=\"0\" hasParent=\"True\">\r\n         
-    <BehaviorTree id=\"0\" />\r\n          <ActionNode id=\"9\" />\r\n          <RandomSelectorNode
+    id=\"16\" />\r\n          <PrioritySelectorNode id=\"1\" />\r\n        </data>\r\n     
+    </_data>\r\n    </ConditionEvalNode>\r\n    <ActionNode id=\"15\">\r\n      <_data>\r\n       
+    <data breakpoint=\"0\" selected=\"False\" position=\"327 559\" name=\"Navigation/MoveToRandomPositionInArea\"
+    description=\"Gets a random position from a close to a targetand moves the game
+    object to that point by using a NavMeshAgent\" cardinality=\"0\" hasParent=\"False\">\r\n         
+    <BehaviorTree id=\"0\" />\r\n          <ActionNode id=\"15\" />\r\n        </data>\r\n     
+    </_data>\r\n    </ActionNode>\r\n    <ConditionEvalNode id=\"8\">\r\n      <_data>\r\n       
+    <data breakpoint=\"0\" selected=\"False\" position=\"1199.469 710.8614\" name=\"AlwaysTrue\"
+    description=\"Eval\" cardinality=\"1\" hasParent=\"True\">\r\n          <BehaviorTree
+    id=\"0\" />\r\n          <ConditionEvalNode id=\"8\" />\r\n          <PrioritySelectorNode
+    id=\"1\" />\r\n        </data>\r\n      </_data>\r\n    </ConditionEvalNode>\r\n   
+    <RandomSelectorNode id=\"7\">\r\n      <_data>\r\n        <data breakpoint=\"0\"
+    selected=\"False\" position=\"841.0304 567.1111\" name=\"Random Selector\" description=\"Selects
+    randomly one of its children\" cardinality=\"-1\" hasParent=\"False\">\r\n         
+    <BehaviorTree id=\"0\" />\r\n          <RandomSelectorNode id=\"7\" />\r\n       
+    </data>\r\n      </_data>\r\n    </RandomSelectorNode>\r\n    <ActionNode id=\"9\">\r\n     
+    <_data>\r\n        <data breakpoint=\"0\" selected=\"False\" position=\"671.2798
+    733.8614\" name=\"Basic/WaitForSeconds\" description=\"Action that success after
+    a period of time.\" cardinality=\"0\" hasParent=\"True\">\r\n          <BehaviorTree
+    id=\"0\" />\r\n          <ActionNode id=\"9\" />\r\n          <RandomSelectorNode
     id=\"7\" />\r\n        </data>\r\n      </_data>\r\n    </ActionNode>\r\n   
-    <ActionNode id=\"10\">\r\n      <_data>\r\n        <data breakpoint=\"0\" selected=\"True\"
-    position=\"992.5 710\" name=\"Navigation/MoveToRandomPosition\" description=\"Gets
-    a random position from a given area and moves the game object to that point by
-    using a NavMeshAgent\" cardinality=\"0\" hasParent=\"True\">\r\n          <BehaviorTree
-    id=\"0\" />\r\n          <ActionNode id=\"10\" />\r\n          <RandomSelectorNode
-    id=\"7\" />\r\n        </data>\r\n      </_data>\r\n    </ActionNode>\r\n  </editorInfo>\r\n</BehaviorBricks>"
-  zoom: 0.9
+    <ActionNode id=\"10\">\r\n      <_data>\r\n        <data breakpoint=\"0\" selected=\"False\"
+    position=\"928.7806 735.1114\" name=\"Navigation/MoveToRandomPositionInArea\"
+    description=\"Gets a random position from a close to a targetand moves the game
+    object to that point by using a NavMeshAgent\" cardinality=\"0\" hasParent=\"True\">\r\n         
+    <BehaviorTree id=\"0\" />\r\n          <ActionNode id=\"10\" />\r\n         
+    <RandomSelectorNode id=\"7\" />\r\n        </data>\r\n      </_data>\r\n    </ActionNode>\r\n 
+    </editorInfo>\r\n</BehaviorBricks>"
+  zoom: 1
   subslist: []
   _guid: e05c846b3248a4547a457781670dad90

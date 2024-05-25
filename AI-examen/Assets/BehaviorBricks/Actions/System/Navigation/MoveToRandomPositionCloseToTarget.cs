@@ -7,9 +7,9 @@ namespace BBUnity.Actions
     /// <summary>
     /// It is an action to move the GameObject to a random position in an area using a NavMeshAgent.
     /// </summary>
-    [Action("Navigation/MoveToRandomPosition")]
-    [Help("Gets a random position from a given area and moves the game object to that point by using a NavMeshAgent")]
-    public class MoveToRandomPosition : GOAction
+    [Action("Navigation/MoveToRandomPositionInArea")]
+    [Help("Gets a random position from a close to a targetand moves the game object to that point by using a NavMeshAgent")]
+    public class MoveToRandomPositionCloseToTarget : GOAction
     {
         private UnityEngine.AI.NavMeshAgent navAgent;
 
@@ -17,6 +17,9 @@ namespace BBUnity.Actions
         [InParam("area")]
         [Help("game object that must have a BoxCollider or SphereColider, which will determine the area from which the position is extracted")]
         public GameObject area;
+
+        [InParam("areaSize")]
+        public float areaSize;
 
         /// <summary>Initialization Method of MoveToRandomPosition.</summary>
         /// <remarks>Check if there is a NavMeshAgent to assign it one by default and assign it
@@ -49,31 +52,7 @@ namespace BBUnity.Actions
 
         private Vector3 getRandomPosition()
         {
-            BoxCollider boxCollider = area != null ? area.GetComponent<BoxCollider>() : null;
-            if (boxCollider != null)
-            {
-                return new Vector3(UnityEngine.Random.Range(area.transform.position.x - area.transform.localScale.x * boxCollider.size.x * 0.5f,
-                                                            area.transform.position.x + area.transform.localScale.x * boxCollider.size.x * 0.5f),
-                                   area.transform.position.y,
-                                   UnityEngine.Random.Range(area.transform.position.z - area.transform.localScale.z * boxCollider.size.z * 0.5f,
-                                                            area.transform.position.z + area.transform.localScale.z * boxCollider.size.z * 0.5f));
-            }
-            else
-            {
-                SphereCollider sphereCollider = area != null ? area.GetComponent<SphereCollider>() : null;
-                if (sphereCollider != null)
-                {
-                    float distance = UnityEngine.Random.Range(-sphereCollider.radius, area.transform.localScale.x * sphereCollider.radius);
-                    float angle = UnityEngine.Random.Range(0, 2 * Mathf.PI);
-                    return new Vector3(area.transform.position.x + distance * Mathf.Cos(angle),
-                                       area.transform.position.y,
-                                       area.transform.position.z + distance * Mathf.Sin(angle));
-                }
-                else
-                {
-                    return gameObject.transform.position + new Vector3(UnityEngine.Random.Range(-5f, 5f), 0, UnityEngine.Random.Range(-5f, 5f));
-                }
-            }
+            return area.transform.position + new Vector3(UnityEngine.Random.Range(-areaSize, areaSize), 0, UnityEngine.Random.Range(-areaSize, areaSize));
         }
         /// <summary>Abort method of MoveToRandomPosition </summary>
         /// <remarks>When the task is aborted, it stops the navAgentMesh.</remarks>
