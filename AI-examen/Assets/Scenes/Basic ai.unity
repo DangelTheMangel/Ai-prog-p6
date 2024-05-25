@@ -2018,7 +2018,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 1.0500002, z: 0}
-  m_LocalScale: {x: 2.7412, y: 1.1851578, z: 2.7412}
+  m_LocalScale: {x: 7.465932, y: 3.2278955, z: 7.465932}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -2035,9 +2035,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 34a301dbb7ee35a47bea41507e10a119, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  amountOfMonsters: 5
+  amountOfMonsters:
+  - prefab: {fileID: 197114, guid: 3e9ff88220a38a546b65c5363ada557e, type: 3}
+    amount: 0
+  - prefab: {fileID: 197114, guid: b948432bfd1c7d447963af7701fa2d29, type: 3}
+    amount: 5
   speed: 16
-  prefab: {fileID: 197114, guid: 3e9ff88220a38a546b65c5363ada557e, type: 3}
   monsterParent: {fileID: 474959849}
   wanderArea: {fileID: 394165956}
   player: {fileID: 394165956}
@@ -6579,6 +6582,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1737081870}
     m_Modifications:
+    - target: {fileID: -6275426099125924436, guid: 3181689e758df31478411a089fd7ded0, type: 3}
+      propertyPath: villagerLayer.m_Bits
+      value: 128
+      objectReference: {fileID: 0}
     - target: {fileID: 4401941467437663535, guid: 3181689e758df31478411a089fd7ded0, type: 3}
       propertyPath: m_Name
       value: Villager (12)

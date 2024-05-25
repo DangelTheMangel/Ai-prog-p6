@@ -7,14 +7,17 @@ namespace BBUnity.Actions
     /// <summary>
     /// It is an action to find the closest game object with a given label.
     /// </summary>
-    [Action("GameObject/ClosestGameObjectWithTag")]
+    [Action("GameObject/ClosestGameObjectWithTagToTarget")]
     [Help("Finds the closest game object with a given tag")]
-    public class ClosestGameObjectWithTag : GOAction
+    public class ClosestGameObjectWithTagToTarget : GOAction
     {
         ///<value>Input Tag of the target game object.</value>
         [InParam("tag")]
         [Help("Tag of the target game object")]
         public string tag;
+
+        [InParam("target")]
+        public GameObject target;
 
         ///<value>OutPut The closest game object with the given tag Parameter.</value>
         [OutParam("foundGameObject")]
@@ -30,7 +33,7 @@ namespace BBUnity.Actions
             float dist = float.MaxValue;
             foreach(GameObject go in GameObject.FindGameObjectsWithTag(tag))
             {
-                float newdist = Vector3.Distance(go.transform.position, gameObject.transform.position);
+                float newdist = Vector3.Distance(go.transform.position, target.transform.position);
                 if(newdist < dist)
                 {
                     dist = newdist;

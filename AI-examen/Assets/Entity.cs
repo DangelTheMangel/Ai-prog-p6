@@ -25,6 +25,7 @@ public class Entity : MonoBehaviour
     }
 
     public void takeDamage(int amount) {
+        Debug.Log(gameObject.name+  "I took damage >:(");
         healt -= amount;
         if (hurtPs != null)
             hurtPs.Play();

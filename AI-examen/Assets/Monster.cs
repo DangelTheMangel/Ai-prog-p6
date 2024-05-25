@@ -4,4 +4,8 @@ using UnityEngine;
 
 public class Monster : Entity
 {
+    private void Start()
+    {
+        behaviorExecutor.SetBehaviorParam("searcgBody",gameObject);
+    }
 }

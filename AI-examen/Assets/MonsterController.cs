@@ -1,45 +1,42 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class MonsterController : MonoBehaviour
 {
-    public int amountOfMonsters = 10;
+    public MonsterAmount[] amountOfMonsters;
     public float speed = 5.0f;
-    ///<value>The gameobject that will be spawned</value>
-    public GameObject prefab;
-    ///<value>The position that the gameobject will be spawned</value>
     public Transform monsterParent;
-    ///<value>Area where the GameObjects will move</value>
     public GameObject wanderArea;
-    ///<value>Target GameObject to follow</value>
     public GameObject player;
     public string monsterTag = "Monster";
     private List<Agent> monsters;
-
-    public float spawnRange = 10.0f; // Range around the player where monsters will spawn
+    public float spawnRange = 10.0f;
 
     public bool active_attack = false;
     public bool mode_updatede = false;
     void Start()
     {
         monsters = new List<Agent>();
+        for (int i = 0; i < amountOfMonsters.Length; i++) {
+            int amount = amountOfMonsters[i].amount;
+            for (int j = 0; j < amount; j++)
+                {
+                    Vector3 randomOffset = new Vector3(
+                        Random.Range(-spawnRange, spawnRange),
+                        0.0f,
+                        Random.Range(-spawnRange, spawnRange)
+                    );
 
-        for (int i = 0; i < amountOfMonsters; i++)
-        {
-            Vector3 randomOffset = new Vector3(
-                Random.Range(-spawnRange, spawnRange),
-                0.0f,
-                Random.Range(-spawnRange, spawnRange)
-            );
-
-            Vector3 spawnPosition = player.transform.position + randomOffset;
-            GameObject instance = Instantiate(prefab, spawnPosition, Quaternion.identity);
-            Agent agent = new Agent(instance, monsterTag, monsterParent, player);
-            monsters.Add(agent);
+                    Vector3 spawnPosition = player.transform.position + randomOffset;
+                    GameObject instance = Instantiate(amountOfMonsters[i].prefab, spawnPosition, Quaternion.identity);
+                    Agent agent = new Agent(instance, monsterTag, monsterParent, player);
+                    monsters.Add(agent);
+                }
         }
-        
 
 
 
@@ -73,6 +70,12 @@ public class MonsterController : MonoBehaviour
         }
         mode_updatede = false;
     }
+}
+
+[Serializable]
+public struct MonsterAmount {
+    public GameObject prefab;
+    public int amount;
 }
 
 public class Agent {
