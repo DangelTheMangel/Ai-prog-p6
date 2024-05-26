@@ -15,9 +15,11 @@ public class MonsterController : MonoBehaviour
     public string monsterTag = "Monster";
     private List<Agent> monsters;
     public float spawnRange = 10.0f;
-
+    public Color activeColor, inacitve;
+    public SpriteRenderer spriteRenderer;
     public bool active_attack = false;
     public bool mode_updatede = false;
+    public bool targetFromPlayer = false;
     void Start()
     {
         monsters = new List<Agent>();
@@ -34,6 +36,10 @@ public class MonsterController : MonoBehaviour
                     Vector3 spawnPosition = player.transform.position + randomOffset;
                     GameObject instance = Instantiate(amountOfMonsters[i].prefab, spawnPosition, Quaternion.identity);
                     Agent agent = new Agent(instance, monsterTag, monsterParent, player);
+                    if (targetFromPlayer)
+                    {
+                    agent.be.SetBehaviorParam("searchBody", player);
+                    }
                     monsters.Add(agent);
                 }
         }
@@ -49,8 +55,18 @@ public class MonsterController : MonoBehaviour
         Vector3 movement = new Vector3(moveHorizontal, 0, moveVertical);
         transform.Translate(movement * speed * Time.deltaTime);
         bool btn_pressed = (Input.GetAxis("Jump") != 0);
-        if(!mode_updatede)
-            mode_updatede = btn_pressed != active_attack;
+        if (!mode_updatede) {
+            mode_updatede = (btn_pressed != active_attack);
+            if (btn_pressed)
+            {
+                spriteRenderer.color = activeColor;
+            }
+            else {
+                spriteRenderer.color = inacitve;
+            }
+
+        }
+
         active_attack = btn_pressed;
 
     }

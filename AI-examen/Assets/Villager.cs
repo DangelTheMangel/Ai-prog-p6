@@ -7,12 +7,13 @@ public class Villager : Entity
     public LayerMask monsterLayer, villagerLayer;
     public LayerMask obstacleLayer;
     public float visionField = 10f;
-    public string panicBool = "escaping";
+    public string panicBool = "escaping", panicAnimName = "panicVillager";
     public ParticleSystem panicPS;
     public bool panicing = false;
     public bool canCalloutToOthers = true;
     public float shoutingDistance = 6f; // Corrected typo from shoutingDistances to shoutingDistance
-
+    public Animator animator;
+   
     private UnityEngine.AI.NavMeshAgent navAgent;
     private BehaviorExecutor behaviorExecutor;
     public GameObject target;
@@ -43,7 +44,7 @@ public class Villager : Entity
                 }
             }
         }
-        else if (canCalloutToOthers)
+       else if (canCalloutToOthers)
         {
             // Create a spherecast within shoutingDistance and get all the colliders that are Villager
             Collider[] villagerColliders = Physics.OverlapSphere(transform.position, shoutingDistance, villagerLayer);
@@ -62,6 +63,7 @@ public class Villager : Entity
 
     public void panic(GameObject target)
     {
+        animator.Play(panicAnimName);
         navAgent.isStopped = true;
         panicing = true;
         this.target = target;
