@@ -28,19 +28,16 @@ public class Villager : Entity
     {
         if (!panicing)
         {
-            // Find all colliders within the vision field radius
             Collider[] hitColliders = Physics.OverlapSphere(transform.position, visionField, monsterLayer);
 
             foreach (var hitCollider in hitColliders)
             {
                 Vector3 directionToEnemy = (hitCollider.transform.position - transform.position).normalized;
                 float distanceToEnemy = Vector3.Distance(transform.position, hitCollider.transform.position);
-
-                // Perform a raycast to check if there are any obstacles between the villager and the enemy
                 if (!Physics.Raycast(transform.position, directionToEnemy, distanceToEnemy, obstacleLayer))
                 {
                     panic(hitCollider.gameObject);
-                    break; // Stop checking further enemies once panic is triggered
+                    break;
                 }
             }
         }

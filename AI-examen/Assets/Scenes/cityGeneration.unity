@@ -2081,10 +2081,10 @@ MonoBehaviour:
   monsterTag: Monster
   spawnRange: 2
   activeColor: {r: 1, g: 0, b: 0, a: 0.5372549}
-  inacitve: {r: 1, g: 1, b: 1, a: 0.49411765}
+  inactiveColor: {r: 1, g: 1, b: 1, a: 1}
   spriteRenderer: {fileID: 413497207}
-  active_attack: 0
-  mode_updatede: 0
+  activeAttack: 0
+  modeUpdated: 0
   targetFromPlayer: 1
   cityController: {fileID: 1901407033}
 --- !u!23 &608883146
@@ -4476,7 +4476,7 @@ Transform:
   m_GameObject: {fileID: 1559342422}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -11.717765, z: 1.0835487}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

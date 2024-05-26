@@ -6,6 +6,8 @@ using UnityEngine.Tilemaps;
 using TMPro;
 using UnityEngine.UI;
 using UnityEngine.AI;
+using Unity.VisualScripting;
+using System;
 
 public class CityController : MonoBehaviour
 {
@@ -27,7 +29,7 @@ public class CityController : MonoBehaviour
     public MonsterController monsterC;
     private string splittingAreasMessage = "Splitting the lands: {0}/{1}";
     private string fillingBuildingsMessage = "Constructing buildings: {0}/{1}";
-    private string fillingRoadsMessage = "Paving roads: {0}/{1}";
+    private string fillingRoadsMessage = "Paving roads: {0}/{1}" , fillingGrassMessage = "sow grass: {0}/{1}" , buildningNavmesh = "Buidling Navmesh", addingVilalgers = "##Villagers moveing in## \n[Villager in group: {0}/{1}]", addingMonsteres = "THE HORDE APEAR";
     private string completionMessage = "The city is complete";
     string startingPouplating = "Starting populate the area";
 
@@ -44,7 +46,7 @@ public class CityController : MonoBehaviour
         {
             if (areas.Count == 0) break;
 
-            int index = Random.Range(0, areas.Count);
+            int index = UnityEngine.Random.Range(0, areas.Count);
             Area area = areas[index];
             areas.RemoveAt(index);
             splitArea(area, areas);
@@ -75,11 +77,95 @@ public class CityController : MonoBehaviour
             yield return null;
         }
         progressText.text = startingPouplating;
-        fillLandscapeAndVillagers();
+
+        baseObj.SetActive(true);
+        minPoint.x -= outsideCitySize.x;
+        maxPoint.x += outsideCitySize.x;
+        minPoint.y -= outsideCitySize.y;
+        maxPoint.y += outsideCitySize.y;
+
+        baseObj.transform.position = tilemap.CellToWorld(new Vector3Int((maxPoint.x + minPoint.x) / 2, (maxPoint.y + minPoint.y) / 2, 0));
+        baseObj.transform.localScale = new Vector3(Mathf.Abs(minPoint.x) + maxPoint.x, 1, Mathf.Abs(minPoint.y) + maxPoint.y);
+
+        List<Vector3Int> possibleSpawnPos = new List<Vector3Int>();
+        // Find possible spots and set grass tiles
+        int max = (maxPoint.x - minPoint.x + 1) * (maxPoint.y - minPoint.y + 1);
+        int iterationCount = 0;
+        int batchSize = 100; // Adjust batch size based on performance needs
+
+        for (int x = minPoint.x; x <= maxPoint.x; x++)
+        {
+            for (int y = minPoint.y; y <= maxPoint.y; y++)
+            {
+                Vector3Int pos = new Vector3Int(x, y, 0);
+                TileBase tilebase = tilemap.GetTile(pos);
+
+                if (tilebase == null)
+                {
+                    tilemap.SetTile(pos, grassTile);
+                }
+
+                if (tilebase != buildingTile && x > 0 && x < cityWidth && y > 0 && y < cityHeight)
+                {
+                    possibleSpawnPos.Add(pos);
+                }
+
+                iterationCount++;
+                if (iterationCount % batchSize == 0 || (x == maxPoint.x && y == maxPoint.y))
+                {
+                    progressText.text = string.Format(fillingGrassMessage, iterationCount, max);
+                    progressSlider.value = (float)iterationCount / max;
+                    yield return null; // Yield after processing a batch
+                }
+            }
+        }
+
+
+        //Build navmesh
+        progressText.text = buildningNavmesh;
+        meshSurface.BuildNavMesh();
+        //add all villigers
+        foreach (MonsterAmount villager in Villagers)
+        {
+            for (int i = 0; i < villager.amount; i++)
+            {
+                if (possibleSpawnPos.Count == 0)
+                {
+                    Debug.LogWarning("Not enough spawn positions for all villagers");
+                    break;
+                }
+
+                int index = UnityEngine.Random.Range(0, possibleSpawnPos.Count);
+                Vector3Int pos = possibleSpawnPos[index];
+                Vector3 realPos = tilemap.CellToWorld(pos);
+                GameObject instance = Instantiate(villager.prefab, new Vector3(realPos.x, 0, realPos.y), Quaternion.identity);
+                possibleSpawnPos.RemoveAt(index);
+                instance.GetComponent<BehaviorExecutor>().SetBehaviorParam(areaParm, baseObj);
+                instance.transform.parent = villagerParent;
+
+                progressText.text = string.Format(addingVilalgers,i+1, villager.amount);
+                progressSlider.value = (float)(i+1) / villager.amount;
+                yield return null;
+            }
+        }
+        progressText.text = addingMonsteres;
+        progressSlider.value = 0;
+        //add monsters
+        if (possibleSpawnPos.Count > 0)
+        {
+            monsterController.transform.position = tilemap.CellToWorld(possibleSpawnPos[UnityEngine.Random.Range(0, possibleSpawnPos.Count)]);
+            monsterController.SetActive(true);
+            monsterC.createMonster(possibleSpawnPos);
+        }
+        else
+        {
+            throw new InvalidOperationException("generation went wrong");
+        }
 
         // Final update
         progressText.text = completionMessage;
         progressSlider.value = 1.0f;
+        yield return null;
         lmenu.SetActive(false);
         hud.SetActive(true);
     }
@@ -98,7 +184,7 @@ public class CityController : MonoBehaviour
         {
             possibleChoices.Remove(lastChoice);
         }
-        splitType = possibleChoices[Random.Range(0, possibleChoices.Count)];
+        splitType = possibleChoices[UnityEngine.Random.Range(0, possibleChoices.Count)];
         lastChoice = splitType;
 
         if (splitType == 0) // Horizontal split
@@ -123,7 +209,7 @@ public class CityController : MonoBehaviour
             return;
         }
 
-        int splitY = Random.Range(area.y + minAreaSize, area.y + area.height - minAreaSize);
+        int splitY = UnityEngine.Random.Range(area.y + minAreaSize, area.y + area.height - minAreaSize);
         Area area1 = new Area(area.x, area.y, area.width, splitY - area.y, false);
         Area area2 = new Area(area.x, splitY, area.width, area.y + area.height - splitY, false);
 
@@ -139,7 +225,7 @@ public class CityController : MonoBehaviour
             return;
         }
 
-        int splitX = Random.Range(area.x + minAreaSize, area.x + area.width - minAreaSize);
+        int splitX = UnityEngine.Random.Range(area.x + minAreaSize, area.x + area.width - minAreaSize);
         Area area1 = new Area(area.x, area.y, splitX - area.x, area.height, false);
         Area area2 = new Area(splitX, area.y, area.x + area.width - splitX, area.height, false);
 
@@ -155,7 +241,7 @@ public class CityController : MonoBehaviour
             return;
         }
 
-        bool isBottomLeft = Random.Range(0, 2) == 0;
+        bool isBottomLeft = UnityEngine.Random.Range(0, 2) == 0;
         if (isBottomLeft)
         {
             Area area1 = new Area(area.x, area.y, area.width / 2, area.height / 2, true);
@@ -247,76 +333,6 @@ public class CityController : MonoBehaviour
                     tilemap.SetTile(new Vector3Int(x, y, 0), roadTile);
                 }
             }
-        }
-    }
-
-
-    public void fillLandscapeAndVillagers()
-    {
-        baseObj.SetActive(true);
-        minPoint.x -= outsideCitySize.x;
-        maxPoint.x += outsideCitySize.x;
-        minPoint.y -= outsideCitySize.y;
-        maxPoint.y += outsideCitySize.y;
-
-        baseObj.transform.position = tilemap.CellToWorld(new Vector3Int((maxPoint.x + minPoint.x) / 2, (maxPoint.y + minPoint.y) / 2, 0));
-        baseObj.transform.localScale = new Vector3(Mathf.Abs(minPoint.x) + maxPoint.x, 1, Mathf.Abs(minPoint.y) + maxPoint.y);
-
-        List<Vector3Int> possibleSpawnPos = new List<Vector3Int>();
-
-        for (int x = minPoint.x; x <= maxPoint.x; x++)
-        {
-            for (int y = minPoint.y; y <= maxPoint.y; y++)
-            {
-                Vector3Int pos = new Vector3Int(x, y, 0);
-                TileBase tilebase = tilemap.GetTile(pos);
-
-                if (tilebase == null)
-                {
-                    tilemap.SetTile(pos, grassTile);
-                }
-
-                if (tilebase != buildingTile && x > 0 && x < cityWidth && y > 0 && y < cityHeight)
-                {
-                    possibleSpawnPos.Add(pos);
-                }
-            }
-        }
-
-        meshSurface.BuildNavMesh();
-
-        foreach (MonsterAmount villager in Villagers)
-        {
-            for (int i = 0; i < villager.amount; i++)
-            {
-                if (possibleSpawnPos.Count == 0)
-                {
-                    Debug.LogWarning("Not enough spawn positions for all villagers");
-                    Debug.Break();
-                    return;
-                }
-
-                int index = Random.Range(0, possibleSpawnPos.Count);
-                Vector3Int pos = possibleSpawnPos[index];
-                Vector3 realPos = tilemap.CellToWorld(pos);
-                GameObject instance = Instantiate(villager.prefab, new Vector3(realPos.x, 0, realPos.y), Quaternion.identity);
-                possibleSpawnPos.RemoveAt(index);
-                instance.GetComponent<BehaviorExecutor>().SetBehaviorParam(areaParm, baseObj);
-                instance.transform.parent = villagerParent;
-            }
-        }
-
-        if (possibleSpawnPos.Count > 0)
-        {
-            monsterController.transform.position = tilemap.CellToWorld(possibleSpawnPos[Random.Range(0, possibleSpawnPos.Count)]);
-            monsterController.SetActive(true);
-            monsterC.createMonster(possibleSpawnPos);
-        }
-        else
-        {
-
-            Debug.LogWarning("No spawn positions available for monster controller");
-            Debug.Break();
         }
     }
 }
