@@ -1640,7 +1640,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - {fileID: 2100000, guid: fad173195b790a64ea8684d6fe600e58, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2086,6 +2086,7 @@ MonoBehaviour:
   active_attack: 0
   mode_updatede: 0
   targetFromPlayer: 1
+  cityController: {fileID: 1901407033}
 --- !u!23 &608883146
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -5457,8 +5458,8 @@ MonoBehaviour:
   roadTile: {fileID: 11400000, guid: 219cb9daa917a424bad12edca0002a93, type: 2}
   buildingTile: {fileID: 11400000, guid: c529cf4271d077b42b99130fa188d837, type: 2}
   grassTile: {fileID: 11400000, guid: 53502bcd15a1ac2439d16df77b423370, type: 2}
-  cityWidth: 100
-  cityHeight: 100
+  cityWidth: 200
+  cityHeight: 200
   outsideCitySize: {x: 25, y: 25}
   splits: 75
   roadWidth: 4
@@ -5475,6 +5476,7 @@ MonoBehaviour:
   villagerParent: {fileID: 1817115683}
   villagerTag: Villagers
   areaParm: walkingArea
+  monsterC: {fileID: 608883145}
 --- !u!4 &1901407034
 Transform:
   m_ObjectHideFlags: 0

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Tilemaps;
 using Random = UnityEngine.Random;
 
 public class MonsterController : MonoBehaviour
@@ -20,32 +21,35 @@ public class MonsterController : MonoBehaviour
     public bool active_attack = false;
     public bool mode_updatede = false;
     public bool targetFromPlayer = false;
-    void Start()
-    {
+    public CityController cityController;
+    public void createMonster(List<Vector3Int> possiableSpawnPos) {
         monsters = new List<Agent>();
-        for (int i = 0; i < amountOfMonsters.Length; i++) {
+        Vector3Int playerCellPos = cityController.tilemap.WorldToCell(transform.position);
+        possiableSpawnPos.Sort((a, b) =>
+        {
+            int distA = (playerCellPos - a).sqrMagnitude;
+            int distB = (playerCellPos - b).sqrMagnitude;
+            return distA.CompareTo(distB);
+        });
+
+        for (int i = 0; i < amountOfMonsters.Length; i++)
+        {
             int amount = amountOfMonsters[i].amount;
             for (int j = 0; j < amount; j++)
+            {
+                Vector3Int spawnCellPos = possiableSpawnPos[0];
+                possiableSpawnPos.RemoveAt(0);
+                Vector3 realPos = cityController.tilemap.CellToWorld(spawnCellPos);
+                
+                GameObject instance = Instantiate(amountOfMonsters[i].prefab, new Vector3(realPos.x,0, realPos.y), Quaternion.identity);
+                Agent agent = new Agent(instance, monsterTag, monsterParent, player);
+                if (targetFromPlayer)
                 {
-                    Vector3 randomOffset = new Vector3(
-                        Random.Range(-spawnRange, spawnRange),
-                        0.0f,
-                        Random.Range(-spawnRange, spawnRange)
-                    );
-
-                    Vector3 spawnPosition = player.transform.position + randomOffset;
-                    GameObject instance = Instantiate(amountOfMonsters[i].prefab, spawnPosition, Quaternion.identity);
-                    Agent agent = new Agent(instance, monsterTag, monsterParent, player);
-                    if (targetFromPlayer)
-                    {
                     agent.be.SetBehaviorParam("searchBody", player);
-                    }
-                    monsters.Add(agent);
                 }
+                monsters.Add(agent);
+            }
         }
-
-
-
     }
 
     void Update()

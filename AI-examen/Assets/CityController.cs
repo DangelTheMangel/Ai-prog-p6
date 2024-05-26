@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using Unity.AI.Navigation;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using UnityEditor.AI;
 using TMPro;
 using UnityEngine.UI;
+using UnityEngine.AI;
 
 public class CityController : MonoBehaviour
 {
@@ -23,14 +23,15 @@ public class CityController : MonoBehaviour
     public NavMeshSurface meshSurface;
     public GameObject baseObj, monsterController;
     public Transform villagerParent;
-    public string villagerTag = "Villagers",areaParm = "walkingArea";
-
+    public string villagerTag = "Villagers", areaParm = "walkingArea";
+    public MonsterController monsterC;
     private string splittingAreasMessage = "Splitting the lands: {0}/{1}";
     private string fillingBuildingsMessage = "Constructing buildings: {0}/{1}";
     private string fillingRoadsMessage = "Paving roads: {0}/{1}";
-    private string completionMessage = "The city is complete, sire!";
+    private string completionMessage = "The city is complete";
+    string startingPouplating = "Starting populate the area";
 
-    public void StartCreateCity(TMP_Text progressText, Slider progressSlider,GameObject lmenu,GameObject hud)
+    public void StartCreateCity(TMP_Text progressText, Slider progressSlider, GameObject lmenu, GameObject hud)
     {
         StartCoroutine(CreateCityCoroutine(progressText, progressSlider, lmenu, hud));
     }
@@ -41,6 +42,8 @@ public class CityController : MonoBehaviour
 
         for (int i = 0; i < splits; i++)
         {
+            if (areas.Count == 0) break;
+
             int index = Random.Range(0, areas.Count);
             Area area = areas[index];
             areas.RemoveAt(index);
@@ -71,7 +74,7 @@ public class CityController : MonoBehaviour
             progressSlider.value = (float)(i + 1) / areas.Count;
             yield return null;
         }
-
+        progressText.text = startingPouplating;
         fillLandscapeAndVillagers();
 
         // Final update
@@ -83,13 +86,21 @@ public class CityController : MonoBehaviour
 
     void splitArea(Area area, List<Area> areas)
     {
+        if (area.width <= minAreaSize * 2 || area.height <= minAreaSize * 2)
+        {
+            areas.Add(area);
+            return;
+        }
+
         List<int> possibleChoices = new List<int> { 0, 1, 2 };
         int splitType = -1;
-        if (lastChoice != -1) { 
+        if (lastChoice != -1)
+        {
             possibleChoices.Remove(lastChoice);
         }
         splitType = possibleChoices[Random.Range(0, possibleChoices.Count)];
         lastChoice = splitType;
+
         if (splitType == 0) // Horizontal split
         {
             splitHorizontal(area, areas);
@@ -104,7 +115,6 @@ public class CityController : MonoBehaviour
         }
     }
 
-
     void splitHorizontal(Area area, List<Area> areas)
     {
         if (area.height <= minAreaSize * 2)
@@ -114,7 +124,6 @@ public class CityController : MonoBehaviour
         }
 
         int splitY = Random.Range(area.y + minAreaSize, area.y + area.height - minAreaSize);
-
         Area area1 = new Area(area.x, area.y, area.width, splitY - area.y, false);
         Area area2 = new Area(area.x, splitY, area.width, area.y + area.height - splitY, false);
 
@@ -131,7 +140,6 @@ public class CityController : MonoBehaviour
         }
 
         int splitX = Random.Range(area.x + minAreaSize, area.x + area.width - minAreaSize);
-
         Area area1 = new Area(area.x, area.y, splitX - area.x, area.height, false);
         Area area2 = new Area(splitX, area.y, area.x + area.width - splitX, area.height, false);
 
@@ -148,7 +156,6 @@ public class CityController : MonoBehaviour
         }
 
         bool isBottomLeft = Random.Range(0, 2) == 0;
-
         if (isBottomLeft)
         {
             Area area1 = new Area(area.x, area.y, area.width / 2, area.height / 2, true);
@@ -178,7 +185,8 @@ public class CityController : MonoBehaviour
         }
     }
 
-    public void checkForX(int x) {
+    public void checkForX(int x)
+    {
         if (x < minPoint.x)
         {
             minPoint.x = x;
@@ -188,6 +196,7 @@ public class CityController : MonoBehaviour
             maxPoint.x = x;
         }
     }
+
     public void checkForY(int y)
     {
         if (y < minPoint.y)
@@ -202,13 +211,38 @@ public class CityController : MonoBehaviour
 
     void fillRoads(Area area)
     {
+        // Set roads along the top and bottom borders
         for (int x = area.x - roadWidth; x < area.x + area.width + roadWidth; x++)
         {
-            for (int y = area.y - roadWidth; y < area.y + area.height + roadWidth; y++)
+            for (int y = area.y - roadWidth; y < area.y; y++)
             {
-                if (x < 0 || y < 0 || x >= cityWidth || y >= cityHeight) continue;
+                if (x >= 0 && y >= 0 && x < cityWidth && y < cityHeight)
+                {
+                    tilemap.SetTile(new Vector3Int(x, y, 0), roadTile);
+                }
+            }
+            for (int y = area.y + area.height; y < area.y + area.height + roadWidth; y++)
+            {
+                if (x >= 0 && y >= 0 && x < cityWidth && y < cityHeight)
+                {
+                    tilemap.SetTile(new Vector3Int(x, y, 0), roadTile);
+                }
+            }
+        }
 
-                if (x < area.x || x >= area.x + area.width || y < area.y || y >= area.y + area.height)
+        // Set roads along the left and right borders
+        for (int y = area.y; y < area.y + area.height; y++)
+        {
+            for (int x = area.x - roadWidth; x < area.x; x++)
+            {
+                if (x >= 0 && y >= 0 && x < cityWidth && y < cityHeight)
+                {
+                    tilemap.SetTile(new Vector3Int(x, y, 0), roadTile);
+                }
+            }
+            for (int x = area.x + area.width; x < area.x + area.width + roadWidth; x++)
+            {
+                if (x >= 0 && y >= 0 && x < cityWidth && y < cityHeight)
                 {
                     tilemap.SetTile(new Vector3Int(x, y, 0), roadTile);
                 }
@@ -216,7 +250,9 @@ public class CityController : MonoBehaviour
         }
     }
 
-    public void fillLandscapeAndVillagers() {
+
+    public void fillLandscapeAndVillagers()
+    {
         baseObj.SetActive(true);
         minPoint.x -= outsideCitySize.x;
         maxPoint.x += outsideCitySize.x;
@@ -225,44 +261,67 @@ public class CityController : MonoBehaviour
 
         baseObj.transform.position = tilemap.CellToWorld(new Vector3Int((maxPoint.x + minPoint.x) / 2, (maxPoint.y + minPoint.y) / 2, 0));
         baseObj.transform.localScale = new Vector3(Mathf.Abs(minPoint.x) + maxPoint.x, 1, Mathf.Abs(minPoint.y) + maxPoint.y);
-        //new Vector3((maxPoint.x + minPoint.x)/2, (maxPoint.y + minPoint.y) / 2,0);
-        List < Vector3Int> possiableSpawnPos = new List<Vector3Int>();
-        for (int x = minPoint.x; x < maxPoint.x + 1; x++) {
-            for (int y = minPoint.y; y < maxPoint.y + 1; y++)
+
+        List<Vector3Int> possibleSpawnPos = new List<Vector3Int>();
+
+        for (int x = minPoint.x; x <= maxPoint.x; x++)
+        {
+            for (int y = minPoint.y; y <= maxPoint.y; y++)
             {
                 Vector3Int pos = new Vector3Int(x, y, 0);
                 TileBase tilebase = tilemap.GetTile(pos);
-                if (tilebase == null) {
+
+                if (tilebase == null)
+                {
                     tilemap.SetTile(pos, grassTile);
                 }
 
-                if ((tilebase == roadTile) && (x > 0 && x < cityWidth && y > 0 && y < cityHeight)) {
-                    possiableSpawnPos.Add(pos);
+                if (tilebase != buildingTile && x > 0 && x < cityWidth && y > 0 && y < cityHeight)
+                {
+                    possibleSpawnPos.Add(pos);
                 }
             }
         }
+
         meshSurface.BuildNavMesh();
-        foreach (MonsterAmount villager in Villagers) {
-             for(int i = 0; i < villager.amount; i++)
-             {
-                 int index = Random.Range(0, possiableSpawnPos.Count);
-                 Vector3Int pos = possiableSpawnPos[index];
-                 Vector3 realPos = tilemap.CellToWorld(pos);
-                 GameObject instance = Instantiate(villager.prefab, new Vector3(realPos.x,0, realPos.y), Quaternion.identity);
-                 possiableSpawnPos.RemoveAt(index);
+
+        foreach (MonsterAmount villager in Villagers)
+        {
+            for (int i = 0; i < villager.amount; i++)
+            {
+                if (possibleSpawnPos.Count == 0)
+                {
+                    Debug.LogWarning("Not enough spawn positions for all villagers");
+                    Debug.Break();
+                    return;
+                }
+
+                int index = Random.Range(0, possibleSpawnPos.Count);
+                Vector3Int pos = possibleSpawnPos[index];
+                Vector3 realPos = tilemap.CellToWorld(pos);
+                GameObject instance = Instantiate(villager.prefab, new Vector3(realPos.x, 0, realPos.y), Quaternion.identity);
+                possibleSpawnPos.RemoveAt(index);
                 instance.GetComponent<BehaviorExecutor>().SetBehaviorParam(areaParm, baseObj);
                 instance.transform.parent = villagerParent;
+            }
+        }
 
-             }
-         }
-        monsterController.transform.position = tilemap.CellToWorld(possiableSpawnPos[Random.Range(0, possiableSpawnPos.Count)]);
-        monsterController.SetActive(true);
+        if (possibleSpawnPos.Count > 0)
+        {
+            monsterController.transform.position = tilemap.CellToWorld(possibleSpawnPos[Random.Range(0, possibleSpawnPos.Count)]);
+            monsterController.SetActive(true);
+            monsterC.createMonster(possibleSpawnPos);
+        }
+        else
+        {
 
-        baseObj.SetActive(false);
+            Debug.LogWarning("No spawn positions available for monster controller");
+            Debug.Break();
+        }
     }
 }
 
-public struct Area
+    public struct Area
 {
     public int x, y, width, height;
     public bool isTriangle;
